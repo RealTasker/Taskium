@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game In Development</title>
+<link rel="stylesheet" href="../nav.css">
+<link rel="stylesheet" href="develop.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="develop-screen">
+  <h1>This game is still in development</h1>
+  <p>Come back soon!</p>
+  <button onclick="goBack()" class="back-btn">← Back to Menu</button>
+</div>
+
+<script src="../game-bar.js"></script>
+<script src="develop.js"></script>
+<script>
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+function initStars(n = 180) {
+  stars = [];
+  for (let i = 0; i < n; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      speed: Math.random() * 0.2 + 0.04,
+      opacity: Math.random() * 0.55 + 0.2
+    });
+  }
+}
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
+    ctx.fill();
+    s.y -= s.speed;
+    if (s.y + s.r < 0) {
+      s.y = H + s.r;
+      s.x = Math.random() * W;
+    }
+  }
+  requestAnimationFrame(drawStars);
+}
+window.addEventListener('resize', () => { resize(); initStars(); });
+resize();
+initStars();
+drawStars();
+
+function goBack() {
+  window.location.href = "../index.html";
+}
+</script>
+
+</body>
+</html>

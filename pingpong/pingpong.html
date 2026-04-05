@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ping Pong — TaskGames</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="pingpong.css"/>
+<link rel="stylesheet" href="../nav.css"/>
+</head>
+<body>
+<div class="bg">
+  <nav class="game-nav">
+    <a href="../index.html" class="nav-back" title="Back to home">←</a>
+    <span class="nav-game-title">Ping Pong</span>
+    <div class="nav-right-slot"></div>
+  </nav>
+
+  <div class="screen" id="screen-menu">
+    <div class="menu-title">🏓 Ping Pong</div>
+    <div class="menu-btns">
+      <button class="menu-btn" id="btn-1p">1 Player<br/><small>vs AI</small></button>
+      <button class="menu-btn" id="btn-2p">2 Players<br/><small>Same keyboard</small></button>
+    </div>
+    <div class="menu-controls">
+      <div class="ctrl-box">
+        <div class="ctrl-title">Player 1</div>
+        <div class="ctrl-keys"><kbd>W</kbd> / <kbd>S</kbd></div>
+      </div>
+      <div class="ctrl-box">
+        <div class="ctrl-title">Player 2</div>
+        <div class="ctrl-keys"><kbd>↑</kbd> / <kbd>↓</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="screen-diff">
+    <div class="menu-title">Choose Difficulty</div>
+    <div class="diff-btns">
+      <button class="diff-btn easy"       data-diff="easy">Easy</button>
+      <button class="diff-btn medium"     data-diff="medium">Medium</button>
+      <button class="diff-btn hard"       data-diff="hard">Hard</button>
+      <button class="diff-btn impossible" data-diff="impossible">Impossible</button>
+    </div>
+    <button class="menu-btn outline" id="btn-diff-back" style="margin-top:8px;">← Back</button>
+  </div>
+
+  <div class="screen hidden" id="screen-game">
+    <div class="scoreboard">
+      <div class="score-side">
+        <div class="score-name" id="name-left">Player 1</div>
+        <div class="score-val" id="score-left">0</div>
+      </div>
+      <div class="score-mid">
+        <div class="score-set" id="score-set">First to 7</div>
+        <div class="pause-hint" id="pause-hint"></div>
+      </div>
+      <div class="score-side">
+        <div class="score-name" id="name-right">AI</div>
+        <div class="score-val" id="score-right">0</div>
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="screen hidden" id="screen-over">
+    <div class="result-row">
+      <div class="result-side" id="result-left">
+        <div class="result-badge" id="badge-left">🏆 Winner</div>
+        <div class="result-name" id="result-name-left">Player 1</div>
+        <div class="result-score" id="result-score-left">5</div>
+      </div>
+      <div class="result-divider">—</div>
+      <div class="result-side" id="result-right">
+        <div class="result-badge" id="badge-right">💀 Loser</div>
+        <div class="result-name" id="result-name-right">AI</div>
+        <div class="result-score" id="result-score-right">2</div>
+      </div>
+    </div>
+    <div class="over-btns">
+      <button class="menu-btn" id="btn-rematch">Rematch</button>
+      <button class="menu-btn outline" id="btn-menu">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script src="../game-save.js"></script>
+<script src="../game-bar.js"></script>
+<script src="pingpong.js"></script>
+<script src="../loading.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../nav.css">
+<link rel="stylesheet" href="tag.css">
+</head>
+<body>
+
+<nav class="game-nav">
+  <a href="../index.html" class="nav-back" title="Back to home">&larr;</a>
+  <span class="nav-game-title">Tag</span>
+  <div class="nav-right-slot"></div>
+</nav>
+
+<div class="screen" id="menu">
+  <div class="menu-logo">TAG</div>
+  <div class="menu-sub">Run · Chase · Don't get caught</div>
+  <div class="card">
+    <h3>Players</h3>
+    <div class="pill-row">
+      <button class="pill active" data-p="2">2P</button>
+      <button class="pill" data-p="3">3P</button>
+      <button class="pill" data-p="4">4P</button>
+    </div>
+    <h3>Map</h3>
+    <div class="map-grid" id="mapGrid"></div>
+    <h3>Time Limit</h3>
+    <div class="pill-row">
+      <button class="pill time-pill" data-t="60">1 min</button>
+      <button class="pill time-pill active" data-t="120">2 min</button>
+      <button class="pill time-pill" data-t="180">3 min</button>
+    </div>
+    <button class="btn-primary" id="startBtn">▶ Start Game</button>
+  </div>
+  <div class="controls-hint">
+    <div class="ctrl-player"><div class="ctrl-dot" style="background:var(--p1)"></div>P1<span class="ctrl-keys">A D W</span></div>
+    <div class="ctrl-player"><div class="ctrl-dot" style="background:var(--p2)"></div>P2<span class="ctrl-keys">Arrow Keys</span></div>
+    <div class="ctrl-player"><div class="ctrl-dot" style="background:var(--p3)"></div>P3<span class="ctrl-keys">F H T</span></div>
+    <div class="ctrl-player"><div class="ctrl-dot" style="background:var(--p4)"></div>P4<span class="ctrl-keys">J L I</span></div>
+  </div>
+</div>
+
+<div class="screen hidden" id="countdown-screen">
+  <div id="countdown-num">3</div>
+  <div id="countdown-text">Get Ready!</div>
+</div>
+
+<div class="screen hidden" id="game-screen">
+  <div id="hud">
+    <div class="hud-player" id="hud-p1" style="border-color:var(--p1)"><div class="hud-p-dot" style="background:var(--p1)"></div><span>P1</span></div>
+    <div class="hud-player" id="hud-p2" style="border-color:var(--p2)"><div class="hud-p-dot" style="background:var(--p2)"></div><span>P2</span></div>
+    <div class="hud-player hidden" id="hud-p3" style="border-color:var(--p3)"><div class="hud-p-dot" style="background:var(--p3)"></div><span>P3</span></div>
+    <div class="hud-player hidden" id="hud-p4" style="border-color:var(--p4)"><div class="hud-p-dot" style="background:var(--p4)"></div><span>P4</span></div>
+    <div id="hud-timer">2:00</div>
+  </div>
+  <div id="canvas-wrap">
+    <div id="stage-shell"><canvas id="gameCanvas"></canvas></div>
+    <div id="abilityBar"></div>
+  </div>
+</div>
+
+<div class="screen hidden" id="result-screen">
+  <div class="result-title">Time's Up!</div>
+  <div class="result-cards" id="resultCards"></div>
+  <div class="result-btns">
+    <button class="btn-secondary" id="rematchBtn">🔄 Rematch</button>
+    <button class="btn-secondary" id="menuBtn">🏠 Menu</button>
+  </div>
+</div>
+
+<script src="../game-save.js"></script>
+<script src="../game-bar.js"></script>
+<script src="tag.js"></script>
+</body>
+</html>

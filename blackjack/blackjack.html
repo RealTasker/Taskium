@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Blackjack</title>
+  <script>
+    (() => {
+      try {
+        const prefersReducedMotion = typeof window.matchMedia === 'function'
+          && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const cpuCores = Number(navigator.hardwareConcurrency || 0);
+        const memoryGb = Number(navigator.deviceMemory || 0);
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const slowConnection = conn && (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g' || conn.effectiveType === '3g');
+        const saveData = !!(conn && conn.saveData);
+        const lowPowerDevice = (cpuCores > 0 && cpuCores <= 4) || (memoryGb > 0 && memoryGb <= 4);
+        if (prefersReducedMotion || lowPowerDevice || slowConnection || saveData)
+          document.documentElement.classList.add('perf-lite');
+      } catch {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Playfair+Display:wght@700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="blackjack.css"/>
+  <link rel="stylesheet" href="../nav.css"/>
+</head>
+<body>
+
+<div id="table">
+  <div class="deck-shoe" aria-hidden="true"></div>
+
+  <div id="hud" class="game-nav">
+    <a href="../index.html" class="nav-back" title="Back to home">←</a>
+    <div class="nav-right-slot">
+      <div class="stat-box">
+        <span class="stat-label">Wallet</span>
+        <span class="stat-value" id="wallet-val">$1,000</span>
+      </div>
+      <div class="stats-row">
+        <span id="stat-wins">0</span> W /
+        <span id="stat-losses">0</span> L /
+        <span id="stat-pushes">0</span> P
+      </div>
+      <div class="level-badge" id="level-badge">
+        <div class="level-top">
+          <span class="level-label">LVL</span>
+          <span class="level-num" id="level-num">1</span>
+        </div>
+        <div class="level-xp-bar"><div class="level-xp-fill" id="level-xp-fill"></div></div>
+        <span class="level-xp-text" id="level-xp-text">0 / 5 XP</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-box stat-loan" id="loan-box" style="display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:31;">
+    <span class="stat-label">Loan owed</span>
+    <span class="stat-value stat-loan-val" id="loan-val">$0</span>
+  </div>
+
+  <div class="hand-container dealer-area" id="dealer-area">
+    <div class="hand-label">Dealer</div>
+    <div class="cards-wrapper" id="dealer-cards"></div>
+    <div class="score-badge" id="dealer-score"></div>
+  </div>
+
+  <div class="hand-container" id="player-area">
+    <div class="hand-label">Player</div>
+    <div class="player-hands-row single" id="player-hands-row">
+      <div class="hand-slot active" data-hand="0">
+        <span class="hand-slot-label">Hand 1</span>
+        <div class="cards-wrapper" id="player-cards-0"></div>
+        <div class="score-badge" id="player-score-0"></div>
+      </div>
+      <div class="hand-slot inactive" data-hand="1">
+        <span class="hand-slot-label">Hand 2</span>
+        <div class="cards-wrapper" id="player-cards-1"></div>
+        <div class="score-badge" id="player-score-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-zone">
+    <div id="gameplay-controls">
+      <button class="btn btn-hit"    id="btn-hit"    onclick="hit()">Hit</button>
+      <button class="btn btn-stand"  id="btn-stand"  onclick="stand()">Stand</button>
+      <button class="btn btn-double" id="btn-double" onclick="doubleDown()">Double</button>
+      <button class="btn btn-split"  id="btn-split"  onclick="splitHand()">Split</button>
+    </div>
+
+    <div id="betting-overlay">
+      <div class="bet-info">
+        <span>BET</span>
+        <span id="bet-val">$0</span>
+      </div>
+
+      <div class="chips-rack">
+        <div class="chip chip-5"    onclick="addBetChip(5,event)">5</div>
+        <div class="chip chip-10"   onclick="addBetChip(10,event)">10</div>
+        <div class="chip chip-25"   onclick="addBetChip(25,event)">25</div>
+        <div class="chip chip-50"   onclick="addBetChip(50,event)">50</div>
+        <div class="chip chip-100"  onclick="addBetChip(100,event)">100</div>
+        <div class="chip chip-500"  onclick="addBetChip(500,event)">500</div>
+        <div class="chip chip-1000" onclick="addBetChip(1000,event)">1K</div>
+        <div class="chip chip-gold" onclick="allIn()">ALL<br>IN</div>
+      </div>
+
+      <div class="custom-bet-row">
+        <label for="custom-bet-input">Custom $</label>
+        <div class="custom-bet-input-wrap">
+          <input id="custom-bet-input" class="custom-bet-input" type="text" pattern="[0-9]*" placeholder="Amount" inputmode="numeric"/>
+        </div>
+        <button class="btn btn-util btn-custom-bet" onclick="placeCustomBetUI()">Add</button>
+      </div>
+
+      <div class="take-loan-strip" id="take-loan-strip" style="display:none;">
+        <p class="take-loan-msg">You're broke. One-time loan — 10% interest per minute.</p>
+        <div class="loan-buttons">
+          <button class="btn btn-util" onclick="takeLoan(500)">Borrow $500</button>
+          <button class="btn btn-deal" onclick="takeLoan(1000)">Borrow $1,000</button>
+        </div>
+      </div>
+
+      <div class="bet-controls">
+        <button class="btn btn-util" onclick="clearBet()">Clear</button>
+        <button class="btn btn-util" onclick="doubleBet()">2×</button>
+        <button class="btn btn-util btn-rebet" id="btn-rebet" onclick="rebet()">Rebet</button>
+        <button class="btn btn-util" id="btn-payall" onclick="payLoanFull()" style="display:none;">Repay Loan</button>
+        <button class="btn btn-deal" id="btn-deal" onclick="deal()">DEAL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="msg-overlay"><div id="msg-text"></div></div>
+
+<div class="levelup-overlay" id="levelup-overlay" style="display:none;">
+  <div class="levelup-box">
+    <div class="levelup-label">LEVEL UP!</div>
+    <div class="levelup-num" id="levelup-num">2</div>
+    <div class="levelup-sub" id="levelup-sub">Keep it going!</div>
+  </div>
+</div>
+
+<div class="gameover-overlay" id="gameover-overlay" style="display:none;">
+  <video id="gameover-video" src="hikari.mp4" playsinline style="display:none;"></video>
+  <div class="gameover-click" id="gameover-click" style="display:none;">
+    <div class="gameover-click-hint">▶ Tap to play</div>
+  </div>
+  <div class="gameover-ui" id="gameover-ui" style="display:none;">
+    <div class="gameover-title">Game Over</div>
+    <div class="gameover-level">You reached <strong id="go-level">Level 1</strong></div>
+    <div class="gameover-stats">
+      <span class="go-stat-w">🏆 <span id="go-wins">0</span> Wins</span>
+      <span class="go-stat-l">💀 <span id="go-losses">0</span> Losses</span>
+      <span class="go-stat-p">🤝 <span id="go-pushes">0</span> Ties</span>
+    </div>
+    <div class="gameover-actions">
+      <button class="btn btn-util btn-go-home" onclick="window.location.href='../index.html'">🏠 Home</button>
+      <button class="btn btn-deal" id="btn-play-again">🃏 Play Again</button>
+    </div>
+  </div>
+</div>
+
+<script src="../game-save.js"></script>
+<script src="../game-bar.js"></script>
+<script src="blackjack.js"></script>
+<script src="../loading.js"></script>
+</body>
+</html>
